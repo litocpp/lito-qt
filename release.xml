@@ -1,0 +1,8 @@
+<release version="0.1.1" date="2026-10-06">
+  <description>
+    <ul>
+      <li>Support Qt 6.8 and newer Qt 6 releases using Lito version utilities.</li>
+      <li>Handle Qt 6.8 Protobuf registration filenames.</li>
+    </ul>
+  </description>
+</release>
