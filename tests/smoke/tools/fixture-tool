@@ -1,0 +1,74 @@
+#!/bin/sh
+set -eu
+
+protoc=false
+qml=false
+for argument in "$@"; do
+  case "$argument" in
+    --plugin=protoc-gen-qtprotobufgen=*) protoc=true ;;
+    "--qtprotobufgen_opt=QML;QML=true") qml=true ;;
+  esac
+done
+
+if "$protoc"; then
+  if ! "$qml"; then
+    echo "missing Qt Protobuf QML generation option" >&2
+    exit 1
+  fi
+  input=""
+  depfile=""
+  for argument in "$@"; do
+    input="$argument"
+    case "$argument" in
+      --dependency_out=*) depfile=${argument#*=} ;;
+    esac
+  done
+  filename=${input##*/}
+  basename=${filename%.proto}
+  printf '#pragma once\n' > "${basename}.qpb.h"
+  printf '// generated protobuf source\n' > "${basename}.qpb.cpp"
+  printf '// generated protobuf registrar\n' > "${basename}_qtprotoreg.cpp"
+  printf '%s: %s\n' "${basename}.qpb.h" "$input" > "$depfile"
+  exit 0
+fi
+
+output=""
+qmltypes=""
+depfile=""
+input=""
+pending=""
+collect=false
+output_json=false
+for argument in "$@"; do
+  if [ -n "$pending" ]; then
+    case "$pending" in
+      output) output="$argument" ;;
+      depfile) depfile="$argument" ;;
+    esac
+    pending=""
+    continue
+  fi
+  input="$argument"
+  case "$argument" in
+    -o|--output|-qm|-output-file) pending=output ;;
+    --dep-file-path) pending=depfile ;;
+    --generate-qmltypes=*) qmltypes=${argument#*=} ;;
+    --collect-json) collect=true ;;
+    --output-json) output_json=true ;;
+  esac
+done
+
+if "$collect"; then
+  printf '{}\n' > "$output"
+else
+  printf '// %s\n' "$*" > "$output"
+fi
+if [ -n "$qmltypes" ]; then
+  printf 'import QtQuick.tooling 1.2\nModule {}\n' > "$qmltypes"
+fi
+if "$output_json"; then
+  printf '{}\n' > "${output}.json"
+fi
+if [ -n "$depfile" ]; then
+  printf '%s: %s\n' "$output" "$input" > "$depfile"
+fi

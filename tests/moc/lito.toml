@@ -1,0 +1,17 @@
+[package]
+name = "qt-moc-smoke"
+version = "0.1.0"
+
+[[bin]]
+name = "qt-moc-smoke"
+sources = ["main.cpp"]
+link-stdlib = true
+
+[dependencies.lito-qt]
+path = "../.."
+
+[external-dependencies.cmake.qt6]
+package = "Qt6"
+components = ["Core"]
+targets = [{ name = "Qt6::Core" }]
+host-tools = [{ name = "moc", target = "Qt6::moc" }]

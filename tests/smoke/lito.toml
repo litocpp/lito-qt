@@ -1,0 +1,36 @@
+[package]
+name = "fixture-qt-protobuf"
+version = "0.1.0"
+
+[[bin]]
+link-stdlib = false
+name = "fixture-qt-protobuf"
+sources = ["main.cpp"]
+
+[dependencies.lito-qt]
+path = "../.."
+
+[external-sources.schema]
+path = "proto"
+
+[external-sources.tools]
+path = "tools"
+
+[external-dependencies.cmake.qt6]
+package = "Qt6"
+source = "tools"
+adapter = "tools/adapter.cmake"
+targets = [
+  { name = "Qt6::Protobuf" },
+  { name = "Qt6::ProtobufQuick" },
+]
+host-tools = [
+  { name = "moc", target = "Qt6::moc" },
+  { name = "qmltyperegistrar", target = "Qt6::qmltyperegistrar" },
+  { name = "rcc", target = "Qt6::rcc" },
+  { name = "qmlimportscanner", target = "Qt6::qmlimportscanner" },
+  { name = "qmlcachegen", target = "Qt6::qmlcachegen" },
+  { name = "lrelease", target = "Qt6::lrelease" },
+  { name = "protoc", target = "WrapProtoc::WrapProtoc" },
+  { name = "qtprotobufgen", target = "Qt6::qtprotobufgen" },
+]

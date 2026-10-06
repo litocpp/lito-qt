@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package fixture.control;
+
+message Status {
+  string text = 1;
+}
