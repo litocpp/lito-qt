@@ -1,4 +1,5 @@
 local lito = require("@lito")
+local dependency = require("qt/dependency.lua")
 local resource = require("qt/resource.lua")
 
 local translations = {}
@@ -66,10 +67,7 @@ function translations.generate(request)
   local files = checked_ts_files(require_field(request, "ts_files", "table"))
   local output = safe_path(request.output or ("lito-translations/" .. name),
                            "qt.translations.output")
-  local information = lito.external_dependency_info(qt)
-  if information.provider ~= "cmake" or not information.version:match("^6%.11%.") then
-    error("qt.translations currently requires a Qt 6.11 CMake dependency")
-  end
+  dependency.require_qt(qt, "qt.translations")
 
   local tool = lito.external_tool(qt, "lrelease")
   local generated = {}

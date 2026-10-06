@@ -8,4 +8,4 @@ endforeach()
 add_executable(WrapProtoc::WrapProtoc IMPORTED GLOBAL)
 set_property(TARGET WrapProtoc::WrapProtoc PROPERTY IMPORTED_LOCATION
              "${CMAKE_CURRENT_LIST_DIR}/fixture-tool")
-set(Qt6_VERSION "6.11.1")
+file(STRINGS "${CMAKE_CURRENT_LIST_DIR}/version.txt" Qt6_VERSION)

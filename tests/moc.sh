@@ -4,7 +4,8 @@ set -eu
 test "$#" -eq 1 || { echo 'usage: sh tests/moc.sh /absolute/path/to/lito' >&2; exit 1; }
 compiler=$1
 package_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-run_root=$(mktemp -d /tmp/lito-qt-moc.XXXXXX)
+mkdir -p "$package_root/build"
+run_root=$(mktemp -d "$package_root/build/moc.XXXXXX")
 printf 'Qt moc output: %s\n' "$run_root"
 mkdir "$run_root/package"
 cp -R "$package_root/lito.toml" "$package_root/lib.lua" "$package_root/qt" \

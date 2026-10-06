@@ -1,4 +1,5 @@
 local lito = require("@lito")
+local dependency = require("qt/dependency.lua")
 local moc = require("qt/moc.lua")
 local resource = require("qt/resource.lua")
 
@@ -424,10 +425,7 @@ function qml.generate_module(request)
   if plugin ~= "static" and plugin ~= "none" then
     error("qt.qml_module.plugin must be 'static' or 'none'")
   end
-  local information = lito.external_dependency_info(request.qt)
-  if information.provider ~= "cmake" or not information.version:match("^6%.11%.") then
-    error("qt.qml_module currently requires a Qt 6.11 CMake dependency")
-  end
+  local information = dependency.require_qt(request.qt, "qt.qml_module")
 
   local target_path = uri:gsub("%.", "/")
   local prefix = request.output or ("lito-qml/" .. target_path)

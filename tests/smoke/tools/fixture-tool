@@ -27,7 +27,11 @@ if "$protoc"; then
   basename=${filename%.proto}
   printf '#pragma once\n' > "${basename}.qpb.h"
   printf '// generated protobuf source\n' > "${basename}.qpb.cpp"
-  printf '// generated protobuf registrar\n' > "${basename}_qtprotoreg.cpp"
+  suffix=_qtprotoreg.cpp
+  case "$(cat "$(dirname "$0")/version.txt")" in
+    6.8.*) suffix=_protobuftyperegistrations.cpp ;;
+  esac
+  printf '// generated protobuf registrar\n' > "${basename}${suffix}"
   printf '%s: %s\n' "${basename}.qpb.h" "$input" > "$depfile"
   exit 0
 fi

@@ -1,4 +1,5 @@
 local lito = require("@lito")
+local dependency = require("qt/dependency.lua")
 local moc = require("qt/moc.lua")
 local qml = require("qt/qml.lua")
 
@@ -118,10 +119,7 @@ function protobuf.generate(request)
        not request.qml_version:match("^%d+%.%d+$")) then
     error("qt.protobuf.qml_version must be major.minor")
   end
-  local information = lito.external_dependency_info(qt)
-  if information.provider ~= "cmake" or not information.version:match("^6%.11%.") then
-    error("qt.protobuf currently requires a Qt 6.11 CMake dependency")
-  end
+  local information = dependency.require_qt(qt, "qt.protobuf")
   if not contains(information.targets, "Qt6::Protobuf") then
     error("qt.protobuf requires the Qt6::Protobuf target")
   end
@@ -135,13 +133,15 @@ function protobuf.generate(request)
   local moc_files = {}
   lito.target_add_generated_include(target, output)
   lito.target_add_generated_definition(target, "QT_USE_PROTOBUF_LIST_ALIASES")
+  local registration_suffix = lito.version_compare(information.version, "6.9.0") < 0 and
+      "_protobuftyperegistrations.cpp" or "_qtprotoreg.cpp"
 
   for _, file in ipairs(files) do
     local prefix = output .. "/" .. file.basename
     local outputs = {
       prefix .. ".qpb.h",
       prefix .. ".qpb.cpp",
-      prefix .. "_qtprotoreg.cpp",
+      prefix .. registration_suffix,
       prefix .. ".d",
     }
     local arguments = {
